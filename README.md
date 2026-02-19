@@ -1,17 +1,64 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 發財靈籤 - 樂透選號
 
-# Run and deploy your app
+### 🀄 傳統民俗與現代技術的完美結合，為您的開獎體驗增添財氣！
 
-This contains everything you need to run your app locally.
+## 🌟 專案特色
 
-## Run Locally
+「發財靈籤」不僅是一個樂透選號工具，更是一個充滿節慶氛圍的互動式網頁應用。
 
-**Prerequisites:**  Node.js
+- **🧧 沉浸式視覺體驗**：
+  - **3D 傾斜卡片**：隨鼠標滑動展現精美的 3D 透視效果。
+  - **金球滾動動畫**：模擬開獎機的動態選號過程。
+  - **財氣感應特效**：選號完成時觸發金幣、碎紙花與「大吉」靈籤。
+- **🎰 支援多種熱門遊戲**：
+  - **大樂透**：49 選 6。
+  - **威力彩**：A 區 38 選 6，B 區 8 選 1。
+  - **今彩 539**：39 選 5。
+- **🐎 金馬主題設計**：採用紅金配色，融合傳統書法元素與現代動態背景。
+- **📱 PWA 支援**：支援離線使用與桌面安裝，隨時隨地感應財氣。
 
+## 🛠️ 技術架構
 
-1. Install dependencies:
-   `npm install`
-2. Run the app:
-   `npm run dev`
+本專案採用最前沿的前端技術棧開發：
+
+- **框架**：[React 19](https://react.dev/)
+- **建構工具**：[Vite 6](https://vitejs.dev/)
+- **語言**：[TypeScript](https://www.typescriptlang.org/)
+- **樣式**：[Tailwind CSS](https://tailwindcss.com/)
+- **離線支援**：[Vite PWA Plugin](https://vite-pwa-org.netlify.app/)
+
+## 🚀 快速開始
+
+### 環境需求
+- [Node.js](https://nodejs.org/) (建議最新穩定版)
+
+### 本地開發步驟
+
+1. **複製專案**：
+   ```bash
+   git clone <repository-url>
+   cd caishen
+   ```
+
+2. **安裝依賴**：
+   ```bash
+   npm install
+   ```
+
+3. **啟動開發伺服器**：
+   ```bash
+   npm run dev
+   ```
+
+4. **建構生產版本**：
+   ```bash
+   npm run build
+   ```
+
+## ⚖️ 免責聲明
+
+本專案提供的選號功能純屬娛樂用途，結果僅供參考。請理性購買樂透，切勿過度投注。
+
+---
+
+**LUCKY LAB © 2026 | 祝您財星高照，馬到成功！**
