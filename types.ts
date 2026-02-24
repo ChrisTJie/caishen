@@ -22,3 +22,14 @@ export interface GeneratedNumbers {
   source: 'random';
   timestamp: number;
 }
+export interface HistoryItem extends GeneratedNumbers {
+  id: string;
+  gameName: string;
+}
+
+export interface FortunePoem {
+  level: '大吉' | '中吉' | '小吉' | '吉';
+  title: string;
+  poem: string[];
+  blessing: string;
+}

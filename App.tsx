@@ -1,6 +1,12 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { version } from './package.json';
 import { LOTTERY_GAMES } from './constants';
 import { GameCard } from './components/GameCard';
+import { HistoryPanel } from './components/HistoryPanel';
+import { CustomLottery } from './components/CustomLottery';
+import { FortuneRitual } from './components/FortuneRitual';
+import { GeneratedNumbers, HistoryItem, FortunePoem } from './types';
+import { audioService } from './AudioService';
 
 // --- Visual Components ---
 
@@ -178,10 +184,95 @@ const WarningFooter = () => (
 );
 
 const App: React.FC = () => {
+  const [currentPage, setCurrentPage] = useState<'home' | 'custom'>('home');
+  const [isBGMOn, setIsBGMOn] = useState(false);
+  const [isRitualOpen, setIsRitualOpen] = useState(false);
+  const [history, setHistory] = useState<HistoryItem[]>(() => {
+    const saved = localStorage.getItem('lottery_history');
+    return saved ? JSON.parse(saved) : [];
+  });
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('lottery_history', JSON.stringify(history));
+  }, [history]);
+
+  const toggleBGM = () => {
+    if (isBGMOn) {
+      audioService.stopBGM();
+      audioService.setSFXMuted(true);
+    } else {
+      audioService.setSFXMuted(false);
+      audioService.startBGM();
+    }
+    setIsBGMOn(!isBGMOn);
+  };
+
+  const addToHistory = (gameName: string, zoneA: number[], zoneB?: number[]) => {
+    const newItem = {
+      id: Math.random().toString(36).substr(2, 9),
+      gameName,
+      zoneA,
+      zoneB,
+      timestamp: Date.now(),
+    };
+    setHistory(prev => [newItem, ...prev].slice(0, 10)); // Keep last 10
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+  };
+
   return (
     <div className="min-h-screen text-white bg-red-800 selection:bg-yellow-400 selection:text-red-900 overflow-hidden relative">
       <GoldDustCursor />
       <WarningFooter />
+
+      <HistoryPanel
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+        history={history}
+        onClear={clearHistory}
+      />
+
+      {isRitualOpen && (
+        <FortuneRitual
+          onComplete={(poem) => {
+            setIsRitualOpen(false);
+            // Optionally play a sound or show a mini toast
+          }}
+          onClose={() => setIsRitualOpen(false)}
+        />
+      )}
+
+      {/* Navigation / Header Action */}
+      <nav className="fixed top-6 right-6 z-[100] flex gap-2 md:gap-4 flex-wrap justify-end">
+        <button
+          onClick={toggleBGM}
+          className={`w-10 h-10 rounded-full backdrop-blur-md border flex items-center justify-center transition-all shadow-lg ${isBGMOn ? 'bg-yellow-500/40 border-yellow-400 text-yellow-200' : 'bg-red-950/40 border-yellow-500/30 text-yellow-500/50'}`}
+          title={isBGMOn ? '關閉所有音效' : '開啟所有音效'}
+        >
+          {isBGMOn ? '🔊' : '🔇'}
+        </button>
+        <button
+          onClick={() => setIsRitualOpen(true)}
+          className="px-4 py-2 rounded-full bg-red-600/30 backdrop-blur-md border border-red-500/50 text-red-100 text-sm font-bold hover:bg-red-600/50 transition-all shadow-lg"
+        >
+          🧧 求籤
+        </button>
+        <button
+          onClick={() => setIsHistoryOpen(true)}
+          className="px-4 py-2 rounded-full bg-yellow-500/10 backdrop-blur-md border border-yellow-500/30 text-yellow-100 text-sm font-bold hover:bg-yellow-500/20 transition-all shadow-lg"
+        >
+          📜 紀錄
+        </button>
+        <button
+          onClick={() => setCurrentPage(currentPage === 'home' ? 'custom' : 'home')}
+          className="px-4 py-2 rounded-full bg-yellow-500/20 backdrop-blur-md border border-yellow-500/50 text-yellow-200 text-sm font-bold hover:bg-yellow-500/40 transition-all shadow-lg"
+        >
+          {currentPage === 'home' ? '🛠 自定義' : '🏠 首頁'}
+        </button>
+      </nav>
 
       {/* Dynamic Background layers */}
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-red-600 via-red-800 to-[#3f0000] -z-30"></div>
@@ -220,18 +311,26 @@ const App: React.FC = () => {
 
       {/* Main Content Grid */}
       <main className="container mx-auto px-4 pb-48 md:pb-56 max-w-6xl relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-          {Object.values(LOTTERY_GAMES).map((game) => (
-            <GameCard key={game.id} config={game} />
-          ))}
-        </div>
+        {currentPage === 'home' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+            {Object.values(LOTTERY_GAMES).map((game) => (
+              <GameCard
+                key={game.id}
+                config={game}
+                onSave={(numbers) => addToHistory(game.name, numbers.zoneA, numbers.zoneB)}
+              />
+            ))}
+          </div>
+        ) : (
+          <CustomLottery onSave={(name, a, b) => addToHistory(name, a, b)} />
+        )}
       </main>
 
       {/* Footer */}
       <footer className="absolute bottom-16 left-0 right-0 text-center text-yellow-100/40 text-xs font-mono z-20">
         <div className="mb-2">
           <span className="inline-block border border-yellow-200/20 rounded px-2 py-1 transform rotate-0 hover:rotate-6 transition-transform cursor-default bg-red-900/30 backdrop-blur-sm shadow-sm">
-            甲午年特別版
+            甲午年特別版 v{version}
           </span>
         </div>
         LUCKY LAB © {new Date().getFullYear()}
