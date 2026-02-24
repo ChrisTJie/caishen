@@ -11,14 +11,14 @@ import { audioService } from './AudioService';
 // --- Visual Components ---
 
 // 1. Lantern Component
-const Lanterns = () => (
+const Lanterns = React.memo(() => (
   <>
     {/* Left Lantern */}
-    <div className="fixed top-0 left-4 md:left-12 z-0 animate-swing origin-top" style={{ animationDelay: '0s' }}>
+    <div className="fixed top-0 left-4 md:left-12 z-0 animate-swing origin-top will-change-transform" style={{ animationDelay: '0s' }}>
       <div className="w-1 h-16 md:h-24 bg-yellow-600 mx-auto"></div>
       <div className="relative w-24 h-20 md:w-32 md:h-28 bg-red-700 rounded-xl shadow-[0_10px_30px_rgba(255,0,0,0.4)] border-y-4 border-yellow-600 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_rgba(255,255,255,0.2),_transparent)]"></div>
-        <span className="text-yellow-400 font-serif font-bold text-4xl md:text-5xl drop-shadow-md">春</span>
+        <span className="text-yellow-400 font-serif font-bold text-4xl md:text-5xl drop-shadow-md text-stroke-sm">春</span>
       </div>
       <div className="flex justify-center -mt-1 gap-1">
         <div className="w-1 h-8 md:h-12 bg-yellow-600"></div>
@@ -28,11 +28,11 @@ const Lanterns = () => (
     </div>
 
     {/* Right Lantern */}
-    <div className="fixed top-0 right-4 md:right-12 z-0 animate-swing origin-top" style={{ animationDelay: '-3s' }}>
+    <div className="fixed top-0 right-4 md:right-12 z-0 animate-swing origin-top will-change-transform" style={{ animationDelay: '-3s' }}>
       <div className="w-1 h-10 md:h-16 bg-yellow-600 mx-auto"></div>
       <div className="relative w-24 h-20 md:w-32 md:h-28 bg-red-700 rounded-xl shadow-[0_10px_30px_rgba(255,0,0,0.4)] border-y-4 border-yellow-600 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,_rgba(255,255,255,0.2),_transparent)]"></div>
-        <span className="text-yellow-400 font-serif font-bold text-4xl md:text-5xl drop-shadow-md">福</span>
+        <span className="text-yellow-400 font-serif font-bold text-4xl md:text-5xl drop-shadow-md text-stroke-sm">福</span>
       </div>
       <div className="flex justify-center -mt-1 gap-1">
         <div className="w-1 h-8 md:h-12 bg-yellow-600"></div>
@@ -41,34 +41,34 @@ const Lanterns = () => (
       </div>
     </div>
   </>
-);
+));
 
 // 2. Wealth Waves Component (Replaces Auspicious Clouds)
 // Represents "Rolling Wealth" (財源滾滾)
-const WealthWaves = () => (
+const WealthWaves = React.memo(() => (
   <div className="fixed bottom-0 left-0 right-0 h-32 md:h-48 z-0 pointer-events-none overflow-hidden">
     {/* Layer 1: Back Wave (Slower, Darker Gold) */}
-    <div className="absolute bottom-0 left-0 w-[200%] h-full opacity-30 text-yellow-700 animate-wave" style={{ animationDuration: '30s' }}>
+    <div className="absolute bottom-0 left-0 w-[200%] h-full opacity-30 text-yellow-700 animate-wave will-change-transform" style={{ animationDuration: '30s' }}>
       <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full fill-current">
         <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.3C989.49,25,1113-14.29,1200,52.47V0Z" transform="scale(1, -1) translate(0, -120)" />
       </svg>
     </div>
 
     {/* Layer 2: Middle Wave (Medium Speed, Bright Gold) */}
-    <div className="absolute bottom-0 left-0 w-[200%] h-full opacity-40 text-yellow-500 animate-wave" style={{ animationDuration: '20s', animationDelay: '-5s' }}>
+    <div className="absolute bottom-0 left-0 w-[200%] h-full opacity-40 text-yellow-500 animate-wave will-change-transform" style={{ animationDuration: '20s', animationDelay: '-5s' }}>
       <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full fill-current">
         <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" transform="scale(1, -1) translate(0, -120)" />
       </svg>
     </div>
 
     {/* Layer 3: Front Wave (Fastest, Lightest Gold/Orange) */}
-    <div className="absolute bottom-0 left-0 w-[200%] h-full opacity-30 text-yellow-300 animate-wave" style={{ animationDuration: '15s', animationDelay: '-2s' }}>
+    <div className="absolute bottom-0 left-0 w-[200%] h-full opacity-30 text-yellow-300 animate-wave will-change-transform" style={{ animationDuration: '15s', animationDelay: '-2s' }}>
       <svg viewBox="0 0 1200 120" preserveAspectRatio="none" className="w-full h-full fill-current">
         <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" transform="scale(1, -1) translate(0, -120)" />
       </svg>
     </div>
   </div>
-);
+));
 
 // 3. Gold Dust Cursor Hook & Component
 const GoldDustCursor = () => {
@@ -112,21 +112,24 @@ const GoldDustCursor = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Update and draw particles
-      particlesRef.current.forEach((p, index) => {
+      // Fixed: Iterate backwards when splicing or use filter
+      const currentParticles = particlesRef.current;
+      for (let i = currentParticles.length - 1; i >= 0; i--) {
+        const p = currentParticles[i];
         p.x += p.speedX;
         p.y += p.speedY;
         p.life -= 0.02;
         p.size *= 0.95;
 
         if (p.life <= 0) {
-          particlesRef.current.splice(index, 1);
+          currentParticles.splice(i, 1);
         } else {
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(255, 215, 0, ${p.life})`;
           ctx.fill();
         }
-      });
+      }
 
       requestAnimationFrame(animate);
     };
@@ -142,7 +145,7 @@ const GoldDustCursor = () => {
 };
 
 // Particle component for background
-const Particles = () => {
+const Particles = React.memo(() => {
   const [particles, setParticles] = useState<Array<{ id: number, left: number, delay: number, size: number }>>([]);
 
   useEffect(() => {
@@ -160,7 +163,7 @@ const Particles = () => {
       {particles.map((p) => (
         <div
           key={p.id}
-          className="particle absolute bg-yellow-400/30 blur-[1px]"
+          className="particle absolute bg-yellow-400/30 blur-[1px] will-change-transform"
           style={{
             left: `${p.left}%`,
             width: `${p.size}px`,
@@ -172,16 +175,16 @@ const Particles = () => {
       ))}
     </div>
   );
-};
+});
 
 // 4. Warning Footer Component (Option C)
-const WarningFooter = () => (
+const WarningFooter = React.memo(() => (
   <div className="fixed bottom-0 left-0 right-0 z-[60] py-2 px-4 bg-red-900/90 backdrop-blur-md border-t border-yellow-500/30 text-center">
     <p className="text-yellow-200 text-xs md:text-sm font-medium tracking-wide">
       ⚠️ 「本程式僅供娛樂參考，不涉及金錢賭博。中獎機率全憑運氣，請理性對待，量力而為。」
     </p>
   </div>
-);
+));
 
 const App: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<'home' | 'custom'>('home');

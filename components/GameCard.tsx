@@ -28,13 +28,13 @@ export const GameCard: React.FC<GameCardProps> = ({ config, onSave }) => {
   const [displayNumbers, setDisplayNumbers] = useState<{ zoneA: number[], zoneB?: number[] } | null>(null);
   const rollingIntervalRef = useRef<number | null>(null);
 
-  // 3D Tilt State
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  // 3D Tilt Ref
   const cardRef = useRef<HTMLDivElement>(null);
+  const glareRef = useRef<HTMLDivElement>(null);
 
   // Handle Mouse Move for 3D Tilt
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
+    if (!cardRef.current || !glareRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -46,11 +46,24 @@ export const GameCard: React.FC<GameCardProps> = ({ config, onSave }) => {
     const rotateX = ((y - centerY) / centerY) * -5;
     const rotateY = ((x - centerX) / centerX) * 5;
 
-    setTilt({ x: rotateY, y: rotateX });
+    // Apply styles directly to bypass React render cycle
+    cardRef.current.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+
+    // Update glare
+    const glareX = 50 - rotateY * 5;
+    const glareY = 50 - rotateX * 5;
+    glareRef.current.style.transform = `translate(${rotateY * 2}%, ${rotateX * 2}%) scale(1.5)`;
+    glareRef.current.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.4), transparent 50%)`;
   };
 
   const handleMouseLeave = () => {
-    setTilt({ x: 0, y: 0 });
+    if (cardRef.current) {
+      cardRef.current.style.transform = `rotateX(0deg) rotateY(0deg)`;
+    }
+    if (glareRef.current) {
+      glareRef.current.style.transform = `translate(0%, 0%) scale(1.5)`;
+      glareRef.current.style.background = `radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4), transparent 50%)`;
+    }
   };
 
   // Helper to generate random set for visual effect
@@ -202,10 +215,7 @@ export const GameCard: React.FC<GameCardProps> = ({ config, onSave }) => {
     >
       <div
         ref={cardRef}
-        className="relative preserve-3d transition-transform duration-100 ease-linear h-full"
-        style={{
-          transform: `rotateX(${tilt.y}deg) rotateY(${tilt.x}deg)`
-        }}
+        className="relative preserve-3d transition-transform duration-100 ease-linear h-full will-change-transform"
       >
         {/* Card Glow Effect (Backing) */}
         <div
@@ -218,10 +228,11 @@ export const GameCard: React.FC<GameCardProps> = ({ config, onSave }) => {
 
           {/* Dynamic Glare Effect based on tilt */}
           <div
-            className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay opacity-30 bg-gradient-to-tr from-transparent via-white to-transparent"
+            ref={glareRef}
+            className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay opacity-30 bg-gradient-to-tr from-transparent via-white to-transparent will-change-transform"
             style={{
-              transform: `translate(${tilt.x * 2}%, ${tilt.y * 2}%) scale(1.5)`,
-              background: `radial-gradient(circle at ${50 - tilt.x * 5}% ${50 - tilt.y * 5}%, rgba(255,255,255,0.4), transparent 50%)`
+              transform: 'scale(1.5)',
+              background: 'radial-gradient(circle at 50% 50%, rgba(255,255,255,0.4), transparent 50%)'
             }}
           ></div>
 
