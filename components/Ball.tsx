@@ -13,7 +13,7 @@ export const Ball: React.FC<BallProps> = React.memo(({ number, isSpecial = false
       className={`
         relative flex items-center justify-center 
         w-14 h-14 md:w-20 md:h-20 rounded-full 
-        text-2xl md:text-3xl font-black shadow-[0_10px_20px_rgba(0,0,0,0.5)] 
+        text-2xl md:text-3xl font-black tabular-nums shadow-[0_10px_20px_rgba(0,0,0,0.5)] 
         transform transition-all duration-300 ease-out
         ${isSpecial
           ? 'bg-gradient-to-b from-red-500 via-red-600 to-red-900 text-white border-red-400'

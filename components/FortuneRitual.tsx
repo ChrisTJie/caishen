@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { FortunePoem } from '../types';
 import { POEMS } from '../constants';
 import { audioService } from '../AudioService';
+import { motion } from 'framer-motion';
 
 interface FortuneRitualProps {
     onComplete: (poem: FortunePoem) => void;
@@ -48,8 +49,18 @@ export const FortuneRitual: React.FC<FortuneRitualProps> = ({ onComplete, onClos
     };
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md animate-fade-in">
-            <div className="relative w-full max-w-lg p-8 text-center text-yellow-100">
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-md"
+        >
+            <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="relative w-full max-w-lg p-8 text-center text-yellow-100"
+            >
                 {!showPoem ? (
                     <div className="flex flex-col items-center">
                         <h2 className="text-3xl font-black mb-8 tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-600">
@@ -90,7 +101,11 @@ export const FortuneRitual: React.FC<FortuneRitualProps> = ({ onComplete, onClos
                         </button>
                     </div>
                 ) : (
-                    <div className="animate-stamp">
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="animate-stamp"
+                    >
                         <div className="border-4 border-yellow-500/50 rounded-3xl p-8 bg-red-950/40 backdrop-blur-md shadow-[0_0_50px_rgba(255,215,0,0.2)]">
                             <span className="text-red-500 font-serif font-black text-6xl mb-6 block">
                                 {showPoem.level}
@@ -115,9 +130,9 @@ export const FortuneRitual: React.FC<FortuneRitualProps> = ({ onComplete, onClos
                                 領取籤詩並回頁面
                             </button>
                         </div>
-                    </div>
+                    </motion.div>
                 )}
-            </div>
-        </div>
+            </motion.div>
+        </motion.div>
     );
 };

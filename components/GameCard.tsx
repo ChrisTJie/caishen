@@ -266,19 +266,10 @@ export const GameCard: React.FC<GameCardProps> = ({ config, onSave }) => {
           ))}
 
           {/* Header */}
-          <div className="flex items-center justify-between w-full mb-6 z-10" style={{ transform: 'translateZ(20px)' }}>
-            <h2 className={`text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br ${config.color} drop-shadow-sm tracking-wider`}>
+          <div className="relative flex items-center justify-center w-full mb-6 z-10" style={{ transform: 'translateZ(20px)' }}>
+            <h2 className={`text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br ${config.color} drop-shadow-sm tracking-wider text-center`}>
               {config.name}
             </h2>
-            {result && !loading && (
-              <button
-                onClick={handleShare}
-                className="w-10 h-10 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-xl hover:bg-yellow-500/20 transition-all"
-                title="分享好運"
-              >
-                📤
-              </button>
-            )}
           </div>
 
           {/* Result Area */}
@@ -356,6 +347,18 @@ export const GameCard: React.FC<GameCardProps> = ({ config, onSave }) => {
               <div className="absolute inset-0 shimmer opacity-50"></div>
             </button>
           </div>
+
+          {/* Share Button at the bottom */}
+          {result && !loading && (
+            <div className="flex w-full justify-center mt-4 z-10 animate-fade-in" style={{ transform: 'translateZ(20px)' }}>
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-200/80 text-sm hover:bg-yellow-500/20 transition-all"
+              >
+                <span>📤</span> 分享好運
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

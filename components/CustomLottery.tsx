@@ -57,23 +57,13 @@ export const CustomLottery: React.FC<CustomLotteryProps> = ({ onSave }) => {
     };
 
     return (
-        <div className="container mx-auto px-4 py-12 max-w-4xl animate-fade-in">
+        <div className="container mx-auto px-4 py-12 pt-20 md:pt-12 max-w-4xl animate-fade-in">
             <div className="bg-gradient-to-b from-[#5c0b0b] to-[#2a0505] border border-yellow-500/30 rounded-3xl p-8 md:p-12 shadow-2xl">
                 <header className="relative text-center mb-12">
                     <h2 className="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-b from-yellow-200 to-yellow-600 mb-4">
                         🛠 自定義選號
                     </h2>
                     <p className="text-yellow-200/60 tracking-widest uppercase text-sm">打造專屬您的發財靈感</p>
-
-                    {result && !loading && (
-                        <button
-                            onClick={handleShare}
-                            className="absolute top-0 right-0 w-12 h-12 rounded-full bg-yellow-500/10 border border-yellow-500/30 flex items-center justify-center text-2xl hover:bg-yellow-500/20 transition-all shadow-lg"
-                            title="分享好運"
-                        >
-                            📤
-                        </button>
-                    )}
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
@@ -128,6 +118,14 @@ export const CustomLottery: React.FC<CustomLotteryProps> = ({ onSave }) => {
                         </div>
                         <div className="mt-8 text-yellow-400 font-serif font-black text-2xl tracking-[0.5em] opacity-80">
                             大吉 • 利見大人
+                        </div>
+                        <div className="mt-8 flex justify-center">
+                            <button
+                                onClick={handleShare}
+                                className="flex items-center gap-3 px-6 py-2 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-200 text-lg hover:bg-yellow-500/20 transition-all shadow-lg"
+                            >
+                                <span>📤</span> 分享今日好運
+                            </button>
                         </div>
                     </div>
                 )}

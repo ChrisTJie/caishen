@@ -1,5 +1,6 @@
 import React from 'react';
 import { HistoryItem } from '../types';
+import { motion } from 'framer-motion';
 
 interface HistoryPanelProps {
     history: HistoryItem[];
@@ -12,14 +13,21 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({ history, onClear, is
     return (
         <>
             {/* Backdrop */}
-            <div
-                className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] transition-opacity duration-300 ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110]"
                 onClick={onClose}
             />
 
             {/* Panel */}
-            <div
-                className={`fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-to-b from-[#4a0808] to-[#2a0505] border-l border-yellow-500/30 z-[120] transform transition-transform duration-500 ease-in-out shadow-2xl ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+            <motion.div
+                initial={{ x: '100%' }}
+                animate={{ x: 0 }}
+                exit={{ x: '100%' }}
+                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                className="fixed top-0 right-0 h-full w-full max-w-sm bg-gradient-to-b from-[#4a0808] to-[#2a0505] border-l border-yellow-500/30 z-[120] shadow-2xl"
             >
                 <div className="flex flex-col h-full p-6 text-yellow-100">
                     <div className="flex justify-between items-center mb-8 border-b border-yellow-500/20 pb-4">
@@ -42,8 +50,8 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({ history, onClear, is
                                 <div key={item.id} className="bg-red-950/40 border border-yellow-500/10 rounded-xl p-4 shadow-inner">
                                     <div className="flex justify-between items-start mb-2">
                                         <span className="text-sm font-bold text-yellow-500/80">{item.gameName}</span>
-                                        <span className="text-[10px] opacity-40 font-mono">
-                                            {new Date(item.timestamp).toLocaleTimeString()}
+                                        <span className="text-[10px] opacity-40 font-mono text-right">
+                                            {new Date(item.timestamp).toLocaleDateString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit' })} {new Date(item.timestamp).toLocaleTimeString('zh-TW', { hour12: false, hour: '2-digit', minute: '2-digit' })}
                                         </span>
                                     </div>
                                     <div className="flex flex-wrap gap-2">
@@ -73,7 +81,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({ history, onClear, is
                         </button>
                     </div>
                 </div>
-            </div>
+            </motion.div>
         </>
     );
 };

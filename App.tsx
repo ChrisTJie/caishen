@@ -7,6 +7,7 @@ import { CustomLottery } from './components/CustomLottery';
 import { FortuneRitual } from './components/FortuneRitual';
 import { GeneratedNumbers, HistoryItem, FortunePoem } from './types';
 import { audioService } from './AudioService';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // --- Visual Components ---
 
@@ -231,22 +232,28 @@ const App: React.FC = () => {
       <GoldDustCursor />
       <WarningFooter />
 
-      <HistoryPanel
-        isOpen={isHistoryOpen}
-        onClose={() => setIsHistoryOpen(false)}
-        history={history}
-        onClear={clearHistory}
-      />
+      <AnimatePresence>
+        {isHistoryOpen && (
+          <HistoryPanel
+            isOpen={isHistoryOpen}
+            onClose={() => setIsHistoryOpen(false)}
+            history={history}
+            onClear={clearHistory}
+          />
+        )}
+      </AnimatePresence>
 
-      {isRitualOpen && (
-        <FortuneRitual
-          onComplete={(poem) => {
-            setIsRitualOpen(false);
-            // Optionally play a sound or show a mini toast
-          }}
-          onClose={() => setIsRitualOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isRitualOpen && (
+          <FortuneRitual
+            onComplete={(poem) => {
+              setIsRitualOpen(false);
+              // Optionally play a sound or show a mini toast
+            }}
+            onClose={() => setIsRitualOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Navigation / Header Action */}
       <nav className="fixed top-6 right-6 z-[100] flex gap-2 md:gap-4 flex-wrap justify-end">
@@ -294,8 +301,8 @@ const App: React.FC = () => {
 
       <Particles />
 
-      {/* Header */}
-      <header className="pt-24 pb-12 text-center px-4 relative">
+      {/* Global Header */}
+      <header className="pt-32 md:pt-24 pb-12 text-center px-4 relative">
         <div className="relative z-10">
           <h1 className="text-5xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-[#fff7cc] via-[#ffe564] to-[#c5a000] drop-shadow-[0_4px_8px_rgba(160,20,20,0.9)] mb-2 tracking-wide filter">
             發財靈籤
@@ -312,22 +319,41 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Content Grid */}
-      <main className="container mx-auto px-4 pb-48 md:pb-56 max-w-6xl relative z-10">
+      <AnimatePresence mode="wait">
         {currentPage === 'home' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-            {Object.values(LOTTERY_GAMES).map((game) => (
-              <GameCard
-                key={game.id}
-                config={game}
-                onSave={(numbers) => addToHistory(game.name, numbers.zoneA, numbers.zoneB)}
-              />
-            ))}
-          </div>
+          <motion.div
+            key="home"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          >
+            <main className="container mx-auto px-4 pb-48 md:pb-56 max-w-6xl relative z-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+                {Object.values(LOTTERY_GAMES).map((game) => (
+                  <GameCard
+                    key={game.id}
+                    config={game}
+                    onSave={(numbers) => addToHistory(game.name, numbers.zoneA, numbers.zoneB)}
+                  />
+                ))}
+              </div>
+            </main>
+          </motion.div>
         ) : (
-          <CustomLottery onSave={(name, a, b) => addToHistory(name, a, b)} />
+          <motion.div
+            key="custom"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+          >
+            <main className="container mx-auto px-4 pb-48 md:pb-56 max-w-6xl relative z-10">
+              <CustomLottery onSave={(name, a, b) => addToHistory(name, a, b)} />
+            </main>
+          </motion.div>
         )}
-      </main>
+      </AnimatePresence>
 
       {/* Footer */}
       <footer className="absolute bottom-16 left-0 right-0 text-center text-yellow-100/40 text-xs font-mono z-20">
