@@ -13,7 +13,7 @@ import {
 function TianShenLabel({ mark }: { mark: TianShenMark }) {
   const lucky = mark.luck === '吉';
   return (
-    <span className="inline-flex items-center gap-2">
+    <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-0.5">
       <span
         className={`inline-block h-2.5 w-2.5 shrink-0 rounded-full ${
           lucky ? 'bg-yellow-400 shadow-[0_0_6px_rgba(250,204,21,0.75)]' : 'bg-stone-400/85'
@@ -31,6 +31,64 @@ function TianShenLabel({ mark }: { mark: TianShenMark }) {
   );
 }
 
+function TianShenYiJi({ mark }: { mark: TianShenMark }) {
+  return (
+    <div className="text-sm leading-relaxed text-yellow-100/80">
+      <p className="text-yellow-200/80">{mark.office}</p>
+      {mark.yi.length > 0 ? (
+        <p>
+          <span className="font-bold text-yellow-300/90">宜</span>
+          <span className="ml-1">{mark.yi.join('、')}</span>
+        </p>
+      ) : null}
+      {mark.ji.length > 0 ? (
+        <p>
+          <span className="font-bold text-stone-300">忌</span>
+          <span className="ml-1">{mark.ji.join('、')}</span>
+        </p>
+      ) : null}
+      <p className="mt-0.5 text-yellow-200/60">{mark.note}</p>
+    </div>
+  );
+}
+
+function NowBadge({ children }: { children: string }) {
+  return (
+    <span className="inline-flex rounded-full border border-yellow-300/50 bg-yellow-400/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-yellow-100 shadow-[0_0_10px_rgba(250,204,21,0.28)]">
+      {children}
+    </span>
+  );
+}
+
+function tableRowClass(isClock: boolean, isSolar: boolean): string {
+  const base = 'border-b [&>td]:align-top';
+  if (isClock) {
+    return `${base} border-yellow-400/25 bg-[linear-gradient(90deg,rgba(250,204,21,0.12)_0%,rgba(250,204,21,0.045)_36%,rgba(250,204,21,0)_100%)] shadow-[inset_0_1px_0_rgba(253,224,71,0.28),inset_0_-1px_0_rgba(253,224,71,0.1)]`;
+  }
+  if (isSolar) {
+    return `${base} border-yellow-500/15 bg-[linear-gradient(90deg,rgba(253,224,71,0.08)_0%,rgba(253,224,71,0)_52%)]`;
+  }
+  return `${base} border-yellow-500/10`;
+}
+
+function firstColClass(isClock: boolean, isSolar: boolean): string {
+  const base = 'border-l-[3px] py-3 pr-3 pl-4';
+  if (isClock) return `${base} border-l-yellow-400`;
+  if (isSolar) return `${base} border-l-yellow-400/60`;
+  return `${base} border-l-transparent`;
+}
+
+function cardClass(isClock: boolean, isSolar: boolean): string {
+  const base = 'rounded-xl border px-3 py-3';
+  if (isClock) {
+    return `${base} border-yellow-400/40 bg-gradient-to-br from-yellow-400/10 via-red-950/30 to-red-950/45 pl-4 shadow-[inset_3px_0_0_#facc15,0_0_16px_rgba(250,204,21,0.14)]`;
+  }
+  if (isSolar) {
+    return `${base} border-yellow-400/35 bg-red-950/45 pl-4 shadow-[inset_3px_0_0_rgba(250,204,21,0.55)]`;
+  }
+  return `${base} border-yellow-500/15 bg-red-950/40`;
+}
+
 export function ShichenPage() {
   const now = useTaipeiClock();
   const todayYmd = getTaipeiDateTime(now).ymd;
@@ -40,18 +98,20 @@ export function ShichenPage() {
   const table = useMemo(() => buildShichenTable({ ymd, cityId, now }), [ymd, cityId, now]);
   const almanac = useMemo(() => getAlmanacDay(ymd), [ymd]);
 
-  const clockName = table?.rows.find((row) => row.period.id === table.clockPeriodId)?.period.name;
+  const clockRow = table?.rows.find((row) => row.period.id === table.clockPeriodId);
   const solarName = table?.rows.find((row) => row.period.id === table.solarPeriodId)?.period.name;
+  const clockName = clockRow?.period.name;
+  const clockMark = clockRow && almanac ? almanac.tianShenByBranch[clockRow.period.branch] : undefined;
 
   return (
-    <div className="animate-fade-in mx-auto max-w-4xl">
-      <div className="rounded-2xl border border-yellow-500/30 bg-gradient-to-b from-[#5c0b0b] to-[#2a0505] p-5 shadow-2xl sm:rounded-3xl sm:p-8 md:p-12">
+    <div className="animate-fade-in mx-auto w-full">
+      <div className="rounded-2xl border border-yellow-500/30 bg-gradient-to-b from-[#5c0b0b] to-[#2a0505] p-5 shadow-2xl sm:rounded-3xl sm:p-8 lg:p-10">
         <header className="relative mb-8 text-center md:mb-10">
           <h2 className="mb-3 bg-gradient-to-b from-yellow-200 to-yellow-600 bg-clip-text text-3xl font-black text-transparent sm:text-4xl md:text-6xl">
             時辰真實表
           </h2>
           <p className="text-sm tracking-wide text-yellow-200/80 md:tracking-widest">
-            查閱當日農曆、十二時辰與黃黑道
+            查閱當日農曆、十二時辰、黃黑道與傳統宜忌
           </p>
         </header>
 
@@ -63,6 +123,9 @@ export function ShichenPage() {
             <p>
               黃黑道為常見十二天神輪值排法，各家黃曆可能不同。本表以該公曆日的日支排滿十二時辰；子時跨日，若依晚子時換日，23:00
               起的值神會改屬次日。
+            </p>
+            <p>
+              宜忌為該時辰值神的傳統職司與常見擇時考量，與黃曆「宜／忌」欄不是同一套；具體辦事仍應以各家通書為準，僅供民俗參考。
             </p>
           </GameRules>
         </div>
@@ -135,7 +198,7 @@ export function ShichenPage() {
 
             {table.isToday && clockName ? (
               <div
-                className="mb-6 rounded-2xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-center text-yellow-50"
+                className="mb-6 rounded-2xl border border-yellow-300/40 bg-gradient-to-b from-yellow-400/10 to-transparent px-4 py-3 text-center text-yellow-50 shadow-[0_0_24px_rgba(250,204,21,0.08)]"
                 role="status"
               >
                 <p className="text-sm font-bold tracking-wide">
@@ -143,6 +206,14 @@ export function ShichenPage() {
                     table.clockDiffersFromSolar && solarName ? `，真太陽時為${solarName}` : ''
                   }${table.nearBoundary ? '；接近時辰交界，請一併核對真太陽時。' : '。'}`}
                 </p>
+                {clockMark ? (
+                  <div className="mt-2 text-left sm:mx-auto sm:max-w-xl">
+                    <p className="mb-1 text-sm text-yellow-100/90">
+                      <TianShenLabel mark={clockMark} />
+                    </p>
+                    <TianShenYiJi mark={clockMark} />
+                  </div>
+                ) : null}
               </div>
             ) : (
               <p className="mb-6 text-center text-sm text-yellow-100/70">指定日期不顯示此刻，僅列出該日完整時辰。</p>
@@ -152,44 +223,71 @@ export function ShichenPage() {
               {`${table.city.name}東經 ${table.city.longitude.toFixed(2)}° · 經度修正 ${formatSignedMinutes(table.longitudeOffsetMinutes)} · 均時差 ${formatSignedMinutes(table.equationOfTimeMinutes)} · 合計 ${formatSignedMinutes(table.totalOffsetMinutes)}`}
             </p>
             <p className="mb-4 text-center text-xs leading-relaxed text-yellow-100/60">
-              黃道吉以金點標示，黑道凶以灰點標示。子時為 23:00–01:00，跨兩個公曆日。
+              黃道吉以金點標示，黑道凶以灰點標示。宜忌隨值神而變，不是當日黃曆宜忌欄。子時為
+              23:00–01:00，跨兩個公曆日。
             </p>
 
-            <div className="hidden overflow-x-auto md:block">
-              <table className="w-full min-w-[40rem] border-collapse text-left text-sm text-yellow-100">
+            <div className="hidden md:block">
+              <table className="w-full table-fixed border-collapse text-left text-sm text-yellow-100">
                 <caption className="sr-only">
-                  {table.ymd} {table.city.name}十二時辰、真太陽時與黃黑道對照
+                  {table.ymd} {table.city.name}十二時辰、真太陽時、黃黑道與宜忌對照
                 </caption>
+                <colgroup>
+                  <col className="w-[11%]" />
+                  <col className="w-[8%]" />
+                  <col className="w-[18%]" />
+                  <col className="w-[35%]" />
+                  <col className="w-[14%]" />
+                  <col className="w-[14%]" />
+                </colgroup>
                 <thead>
                   <tr className="border-b border-yellow-500/30 text-yellow-200">
-                    <th className="py-3 pr-3 font-bold">時辰</th>
+                    <th className="border-l-[3px] border-l-transparent py-3 pr-3 pl-4 font-bold">時辰</th>
                     <th className="py-3 pr-3 font-bold">生肖</th>
                     <th className="py-3 pr-3 font-bold">黃黑道</th>
+                    <th className="py-3 pr-3 font-bold">宜忌考量</th>
                     <th className="py-3 pr-3 font-bold">鐘錶時間</th>
-                    <th className="py-3 font-bold">真太陽時（鐘錶）</th>
+                    <th className="py-3 font-bold">真太陽時</th>
                   </tr>
                 </thead>
                 <tbody>
                   {table.rows.map((row) => {
-                    const current = table.isToday && (row.isClockNow || row.isSolarNow);
+                    const isClock = table.isToday && row.isClockNow;
+                    const isSolar = table.isToday && row.isSolarNow;
+                    const current = isClock || isSolar;
                     const mark = almanac?.tianShenByBranch[row.period.branch];
                     return (
                       <tr
                         key={row.period.id}
                         aria-current={current ? 'true' : undefined}
-                        className={`border-b border-yellow-500/10 ${current ? 'bg-yellow-500/15' : ''}`}
+                        className={tableRowClass(isClock, isSolar)}
                       >
-                        <td className="py-3 pr-3 font-black text-yellow-50">{row.period.name}</td>
+                        <td
+                          className={`${firstColClass(isClock, isSolar)} font-black ${
+                            current ? 'text-yellow-100 drop-shadow-[0_0_8px_rgba(250,204,21,0.35)]' : 'text-yellow-50'
+                          }`}
+                        >
+                          {row.period.name}
+                        </td>
                         <td className="py-3 pr-3 text-yellow-100/80">{row.period.animal}</td>
                         <td className="py-3 pr-3">{mark ? <TianShenLabel mark={mark} /> : '—'}</td>
-                        <td className="py-3 pr-3 font-mono tabular-nums">
-                          {row.clockLabel}
-                          {row.isClockNow ? <span className="ml-2 text-xs font-bold text-yellow-300">此刻</span> : null}
+                        <td className="py-3 pr-3 break-words">
+                          {mark ? <TianShenYiJi mark={mark} /> : '—'}
                         </td>
-                        <td className="py-3 font-mono tabular-nums">
-                          {row.solarClockLabel}
-                          {row.isSolarNow ? (
-                            <span className="ml-2 text-xs font-bold text-yellow-300">真太陽</span>
+                        <td className="py-3 pr-3 font-mono text-xs tabular-nums xl:text-sm">
+                          <span className="whitespace-nowrap">{row.clockLabel}</span>
+                          {isClock ? (
+                            <span className="mt-1.5 block">
+                              <NowBadge>此刻</NowBadge>
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="py-3 font-mono text-xs tabular-nums xl:text-sm">
+                          <span className="whitespace-nowrap">{row.solarClockLabel}</span>
+                          {isSolar ? (
+                            <span className="mt-1.5 block">
+                              <NowBadge>真太陽</NowBadge>
+                            </span>
                           ) : null}
                         </td>
                       </tr>
@@ -201,33 +299,42 @@ export function ShichenPage() {
 
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:hidden">
               {table.rows.map((row) => {
-                const current = table.isToday && (row.isClockNow || row.isSolarNow);
+                const isClock = table.isToday && row.isClockNow;
+                const isSolar = table.isToday && row.isSolarNow;
+                const current = isClock || isSolar;
                 const mark = almanac?.tianShenByBranch[row.period.branch];
                 return (
                   <li
                     key={row.period.id}
                     aria-current={current ? 'true' : undefined}
-                    className={`rounded-xl border px-3 py-3 ${
-                      current ? 'border-yellow-400 bg-yellow-500/15' : 'border-yellow-500/15 bg-red-950/40'
-                    }`}
+                    className={cardClass(isClock, isSolar)}
                   >
                     <p className="mb-1 flex items-baseline justify-between gap-2">
-                      <span className="font-black text-yellow-50">
+                      <span
+                        className={`font-black ${
+                          current ? 'text-yellow-100 drop-shadow-[0_0_8px_rgba(250,204,21,0.35)]' : 'text-yellow-50'
+                        }`}
+                      >
                         {row.period.name}
                         <span className="ml-2 text-sm font-bold text-yellow-200/70">{row.period.animal}</span>
                       </span>
-                      {row.isClockNow ? <span className="text-xs font-bold text-yellow-300">此刻</span> : null}
+                      {isClock ? <NowBadge>此刻</NowBadge> : null}
                     </p>
                     {mark ? (
-                      <p className="mb-1 text-sm text-yellow-100/90">
-                        <TianShenLabel mark={mark} />
-                      </p>
+                      <div className="mb-2 space-y-1">
+                        <p className="text-sm text-yellow-100/90">
+                          <TianShenLabel mark={mark} />
+                        </p>
+                        <TianShenYiJi mark={mark} />
+                      </div>
                     ) : null}
                     <p className="font-mono text-sm tabular-nums text-yellow-100/90">鐘錶 {row.clockLabel}</p>
                     <p className="font-mono text-sm tabular-nums text-yellow-100/90">
                       真太陽 {row.solarClockLabel}
-                      {row.isSolarNow && !row.isClockNow ? (
-                        <span className="ml-2 text-xs font-bold text-yellow-300">此刻</span>
+                      {isSolar && !isClock ? (
+                        <span className="ml-2">
+                          <NowBadge>真太陽</NowBadge>
+                        </span>
                       ) : null}
                     </p>
                   </li>
